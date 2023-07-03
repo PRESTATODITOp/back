@@ -1,0 +1,9 @@
+// configurar el babel
+{
+"presets": [
+    "@babel/env"
+],
+"plugins": [
+    "@babel/transform-runtime"
+]
+}

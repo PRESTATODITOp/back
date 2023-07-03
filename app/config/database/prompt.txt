@@ -1,0 +1,8 @@
+crea 5 procedimientos almacenados, la primera que seleccione todos los datos de una tabla, la segunda que realice la busqueda por id, la tercera para insertar datos, la cuarta que actualice los datos, la quinta para eliminar una fila de datos por id... Hazlo sin usar * en los select, con los mismos datos y tamaños, con una sintaxis MySQL y todo con la siguiente tabla:
+
+CREATE TABLE `funcionesrol` (
+  `ID_FUNCIONES` int(11) NOT NULL,
+  `ESTADO_PRESTAMO` varchar(10) DEFAULT NULL,
+  `OBSERVACION_PRESTAMO` varchar(100) DEFAULT NULL,
+  `ID_ROL` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
