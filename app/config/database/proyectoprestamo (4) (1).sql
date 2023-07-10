@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-06-2023 a las 02:08:38
+-- Tiempo de generación: 30-06-2023 a las 12:47:23
 -- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.0.28
+-- Versión de PHP: 8.1.17
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,7 +20,7 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `proyectoprestamo`
 --
-CREATE DATABASE IF NOT EXISTS `proyectoprestamo` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE DATABASE IF NOT EXISTS `proyectoprestamo` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 USE `proyectoprestamo`;
 
 DELIMITER $$
@@ -69,6 +69,12 @@ DROP PROCEDURE IF EXISTS `spDeleteMaterial`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spDeleteMaterial` (IN `_ID_MATERIAL` INT)   BEGIN
     DELETE FROM material
     WHERE ID_MATERIAL = _ID_MATERIAL;
+END$$
+
+DROP PROCEDURE IF EXISTS `spDeleteNotificacion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spDeleteNotificacion` (IN `_ID_NOTI` INT(100))   BEGIN
+    DELETE FROM notificacion
+    WHERE ID_NOTI = _ID_NOTI ;
 END$$
 
 DROP PROCEDURE IF EXISTS `spDeletePrestamos`$$
@@ -135,6 +141,12 @@ DROP PROCEDURE IF EXISTS `spFindAllMaterial`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spFindAllMaterial` ()   BEGIN
     SELECT ID_MATERIAL,NOMBRE, TIPO, COLOR, MEDIDAS
     FROM material;
+END$$
+
+DROP PROCEDURE IF EXISTS `spFindAllNotificacion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spFindAllNotificacion` ()   BEGIN
+    SELECT ID_NOTI, DESCRIPCION, ESTADO, ID_USUARIO
+    FROM notificacion;
 END$$
 
 DROP PROCEDURE IF EXISTS `spFindAllPrestamos`$$
@@ -209,6 +221,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spFindMaterial` (IN `_ID_MATERIAL` 
     WHERE ID_MATERIAL = _ID_MATERIAL;
 END$$
 
+DROP PROCEDURE IF EXISTS `spFindNotificacion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spFindNotificacion` (IN `_ID_NOTI` INT(100))   BEGIN
+    SELECT ID_NOTI, DESCRIPCION, ESTADO, ID_USUARIO
+    FROM notificacion
+    WHERE ID_NOTI = _ID_NOTI ;
+END$$
+
 DROP PROCEDURE IF EXISTS `spFindPrestamos`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spFindPrestamos` (IN `_ID_PRESTAMOS` INT)   BEGIN
     SELECT ID_PRESTAMOS, FECHA_PRESTAMO, FINAL_PRESTAMO, OBSERVACIONES, ID_USUARIO
@@ -280,6 +299,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spInsertMaterial` (IN `_NOMBRE` VAR
     VALUES (_NOMBRE,_TIPO, _COLOR, _MEDIDAS);
 END$$
 
+DROP PROCEDURE IF EXISTS `spInsertNotificacion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spInsertNotificacion` (IN `_DESCRIPCION` VARCHAR(300), IN `_ESTADO` VARCHAR(100), IN `_ID_USUARIO` INT(100))   BEGIN 
+INSERT INTO notificacion (DESCRIPCION, ESTADO, ID_USUARIO)
+VALUES (_DESCRIPCION,_ESTADO,_ID_USUARIO);
+END$$
+
 DROP PROCEDURE IF EXISTS `spInsertPrestamos`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spInsertPrestamos` (IN `_FECHA_PRESTAMO` DATE, IN `_FINAL_PRESTAMO` DATE, IN `_OBSERVACIONES` VARCHAR(100), IN `_ID_USUARIO` INT)   BEGIN
     INSERT INTO prestamos (FECHA_PRESTAMO, FINAL_PRESTAMO, OBSERVACIONES, ID_USUARIO)
@@ -309,6 +334,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spInsertUsuario` (IN `_ID_USUARIO` 
     INSERT INTO usuario (ID_USUARIO, NOMBRE, APELLIDO, TIPO_DOCUMENTO,CORREO, TELEFONO, DIRECCION, JORNADA, PROGRAMA_FORMACION, NUM_FICHA, GENERO, CONTRASENA, ID_ROL)
     VALUES (_ID_USUARIO, _NOMBRE, _APELLIDO, _TIPO_DOCUMENTO, _CORREO, _TELEFONO, _DIRECCION, _JORNADA, _PROGRAMA_FORMACION, _NUM_FICHA, _GENERO, _CONTRASENA, _ID_ROL);
 END$$
+
+DROP PROCEDURE IF EXISTS `spInsumosReserva`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spInsumosReserva` (IN `_NOMBRE_INSUMO` VARCHAR(30), IN `_TIPO_INSUMO` VARCHAR(100), IN `_CARACTERISTICAS` VARCHAR(100), IN `_CANTIDAD` INT(100), IN `_JORNADA` VARCHAR(20), IN `_FECHA_RES` DATE, IN `_HORA_RES` TIME, IN `_TIEMPO_REQUERIDO` TIME, IN `_ID_USUARIO` INT)   BEGIN
+INSERT INTO reserva (NOMBRE_INSUMO, TIPO_INSUMO, CARACTERISTICAS, CANTIDAD, JORNADA, FECHA_RES, HORA_RES,TIEMPO_REQUERIDO,ID_USUARIO)
+VALUES(_NOMBRE_INSUMO, _TIPO_INSUMO, _CARACTERISTICAS,
+       _CANTIDAD,_JORNADA,_FECHA_RES,_HORA_RES,
+       _TIEMPO_REQUERIDO,_ID_USUARIO);
+ END$$
 
 DROP PROCEDURE IF EXISTS `spUpdateAmbientes`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdateAmbientes` (IN `_ID` INT, IN `_CANT_SILLAS` INT, IN `_CANT_MESAS` INT, IN `_NUM_APRENDICES` INT, IN `_NUM_EQUIPOS` INT)   BEGIN
@@ -350,6 +383,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdateMaterial` (IN `_ID_MATERIAL
     UPDATE material
     SET NOMBRE = _NOMBRE,TIPO = _TIPO, COLOR = _COLOR, MEDIDAS = _MEDIDAS
     WHERE ID_MATERIAL = _ID_MATERIAL;
+END$$
+
+DROP PROCEDURE IF EXISTS `spUpdateNotificacion`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdateNotificacion` (IN `_ID_NOTI` INT(100), IN `_DESCRIPCION` VARCHAR(300), IN `_ESTADO` VARCHAR(100), IN `_ID_USUARIO` INT(100))   BEGIN
+    UPDATE notificacion
+    SET DESCRIPCION = _DESCRIPCION, ESTADO = _ESTADO, ID_USUARIO = _ID_USUARIO
+    WHERE ID_NOTI = _ID_NOTI;
 END$$
 
 DROP PROCEDURE IF EXISTS `spUpdatePrestamos`$$
@@ -409,19 +449,16 @@ CREATE TABLE `ambientes` (
 --
 
 INSERT INTO `ambientes` (`ID_AMBIENTES`, `CANT_SILLAS`, `CANT_MESAS`, `NUM_APRENDICES`, `NUM_EQUIPOS`) VALUES
-(123, 11, 5, 21, 3),
-(220, 2, 2, 2, 4),
-(224, 23, 22, 20, 20),
-(234, 10, 5, 20, 3),
-(257, 15, 8, 18, 4),
-(344, 132, 2, 34, 28),
-(345, 14, 7, 16, 3),
-(456, 8, 4, 22, 5),
-(543, 18, 9, 24, 5),
-(689, 16, 9, 19, 4),
-(712, 20, 10, 25, 6),
-(890, 12, 6, 15, 2),
-(987, 13, 7, 17, 4);
+(101, 30, 15, 16, 20),
+(105, 20, 10, 15, 20),
+(108, 35, 17, 35, 25),
+(115, 26, 10, 21, 25),
+(116, 20, 9, 17, 20),
+(120, 30, 13, 21, 24),
+(123, 30, 10, 25, 20),
+(127, 34, 12, 20, 25),
+(130, 38, 20, 30, 30),
+(224, 23, 15, 20, 20);
 
 -- --------------------------------------------------------
 
@@ -443,7 +480,15 @@ CREATE TABLE `computador` (
 
 INSERT INTO `computador` (`ID_COMPUTADOR`, `MARCA`, `CARGADOR`, `MOUSE`) VALUES
 (1, 'hp', 'No', 'SI'),
-(2, 'hp', 'No', 'yes');
+(2, 'hp', 'No', 'NO'),
+(4, 'asus', 'SI', 'NO'),
+(5, 'hp', 'SI', 'NO'),
+(6, 'asus', 'SI', 'NO'),
+(7, 'asus', 'SI', 'NO'),
+(8, 'asus', 'SI', 'NO'),
+(9, 'asus', 'SI', 'NO'),
+(10, 'asus', 'SI', 'NO'),
+(11, 'hp', 'SI', 'NO');
 
 -- --------------------------------------------------------
 
@@ -457,6 +502,17 @@ CREATE TABLE `elementos` (
   `ID_PRESTAMOS` int(100) DEFAULT NULL,
   `ID_INVENTARIO` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `elementos`
+--
+
+INSERT INTO `elementos` (`ID_ELEMENTOS`, `ID_PRESTAMOS`, `ID_INVENTARIO`) VALUES
+(1, 3, 1),
+(2, 4, 2),
+(3, 2, 3),
+(4, 5, 4),
+(5, 7, 5);
 
 -- --------------------------------------------------------
 
@@ -476,8 +532,15 @@ CREATE TABLE `herramienta` (
 --
 
 INSERT INTO `herramienta` (`ID_HERRAMIENTA`, `TIPO`, `COLOR`) VALUES
-(1, 'plana', '45'),
-(2, 'plana', 'rosa');
+(1, 'plana', 'marron'),
+(2, 'plana', 'rosa'),
+(3, 'corte', 'gris'),
+(5, 'electrica', 'gris'),
+(6, 'corte', 'gris'),
+(7, 'corte', 'marron'),
+(8, 'corte', 'negra'),
+(9, 'corte', 'gris'),
+(10, 'soldar', 'amarilla');
 
 -- --------------------------------------------------------
 
@@ -502,8 +565,11 @@ CREATE TABLE `inventario` (
 --
 
 INSERT INTO `inventario` (`ID_INVENTARIO`, `CANTIDAD`, `FECHA_REGISTRO`, `ESTADO`, `ID_AMBIENTES`, `ID_COMPUTADOR`, `ID_HERRAMIENTA`, `ID_MATERIAL`) VALUES
-(18, 131321, '2023-06-08', 1, 123, 1, 1, 4),
-(19, 0, '0000-00-00', 0, 123, 1, 2, 4);
+(1, 2, '2023-06-01', 1, 123, 1, 1, 4),
+(2, 3, '2023-06-08', 1, 105, 1, 5, 9),
+(3, 21, '2023-06-07', 1, 120, 4, 2, 3),
+(4, 4, '2023-06-06', 0, 101, 7, 7, 1),
+(5, 5, '2023-06-06', 0, 105, 2, 1, 10);
 
 -- --------------------------------------------------------
 
@@ -525,15 +591,58 @@ CREATE TABLE `material` (
 --
 
 INSERT INTO `material` (`ID_MATERIAL`, `NOMBRE`, `TIPO`, `COLOR`, `MEDIDAS`) VALUES
+(1, 'tela', 'algodon', 'blanco', '60 cm'),
 (2, 'tela', 'cuero', 'azul', '3 cm'),
+(3, 'tela', 'sintetico', 'negro', '50 cm'),
 (4, 'tela', 'trasparente', 'azul', '50 cm y 60 cm'),
-(5, 'tela', 'trasparente', 'azul', '1 M'),
-(6, 'tela', 'trasparente', 'azul', '50 cm y 5 cm'),
+(5, 'tela', 'algodon', 'blanco', '60 cm'),
+(6, 'tela', 'sintetico', 'negro', '50 cm'),
 (7, 'tela', 'sintentica', 'morado', '200 cm'),
-(12, 'undefined', 'undefined', 'undefined', 'undefined'),
-(13, 'undefined', 'undefined', 'undefined', 'undefined'),
-(14, 'undefined', 'undefined', 'undefined', 'undefined'),
-(15, 'undefined', '12', 'rosa', '2');
+(8, 'tela', 'algodon', 'blanco', '60 cm'),
+(9, 'tela', 'algodon', 'blanco', '60 cm'),
+(10, 'tela', 'cuero', 'marron', '40cm'),
+(99, 'tela', 'sintentica', 'morado', 'm');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `notificacion`
+--
+
+DROP TABLE IF EXISTS `notificacion`;
+CREATE TABLE `notificacion` (
+  `ID_NOTI` int(100) NOT NULL,
+  `DESCRIPCION` varchar(300) NOT NULL,
+  `ESTADO` varchar(100) NOT NULL,
+  `ID_USUARIO` int(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `notificacion`
+--
+
+INSERT INTO `notificacion` (`ID_NOTI`, `DESCRIPCION`, `ESTADO`, `ID_USUARIO`) VALUES
+(1, 'undefined', 'undefined', 0),
+(2, 'el prestamo fue aprobado', 'recibida', 2),
+(3, 'prestamo aprobado', 'aprobado', 2),
+(4, 'prestamo aprobado', 'aprobado', 2),
+(5, 'prestamo aprobado', 'aprobado_coordi', 0),
+(6, 'prestamo aprobado', 'aprobado_coordi', 0),
+(7, 'prestamo aprobado', 'aprobado_coordi', 1035972071),
+(8, 'prestamo aprobado', 'aprobado_coordi', 1040571170),
+(9, 'prestamo aprobado', 'aprobado_coordi', 0),
+(10, 'prestamo aprobado', 'aprobado_coordi', 1035972906),
+(11, 'prestamo aprobado', 'aprobado_coordi', 1025882179),
+(12, 'prestamo aprobado', 'aprobado_coordi', 1035972906),
+(13, 'prestamo Rechazado', 'Rechazado_coordi', 1035972906),
+(14, 'prestamo Rechazado', 'Rechazado_coordi', 1035972906),
+(15, 'prestamo Rechazado', 'Rechazado_coordi', 1035972906),
+(16, 'prestamo Rechazado', 'Rechazado_coordi', 1035972906),
+(17, 'prestamo aprobado', 'aprobado_coordi', 1035972906),
+(18, 'prestamo Rechazado', 'Rechazado_coordi', 1035972906),
+(19, 'prestamo Rechazado', 'Rechazado_coordi', 1035972906),
+(20, 'prestamo Rechazado', 'Rechazado', 1035972906),
+(21, 'prestamo aprobado', 'aprobado', 1035972906);
 
 -- --------------------------------------------------------
 
@@ -555,16 +664,16 @@ CREATE TABLE `prestamos` (
 --
 
 INSERT INTO `prestamos` (`ID_PRESTAMOS`, `FECHA_PRESTAMO`, `FINAL_PRESTAMO`, `OBSERVACIONES`, `ID_USUARIO`) VALUES
-(1, '2023-06-01', '2023-06-05', 'Préstamo de libros', NULL),
-(2, '2023-06-02', '2023-06-04', 'Préstamo de equipo audiovisual', NULL),
-(3, '2023-06-03', '2023-06-07', 'Préstamo de computadora portátil', NULL),
-(4, '2023-06-04', '2023-06-06', 'Préstamo de proyector', NULL),
-(5, '2023-06-05', '2023-06-08', 'Préstamo de herramientas', NULL),
-(6, '2023-06-06', '2023-06-09', 'Préstamo de instrumentos musicales', NULL),
-(7, '2023-06-07', '2023-06-10', 'Préstamo de material de laboratorio', NULL),
-(8, '2023-06-08', '2023-06-11', 'Préstamo de bicicletas', NULL),
-(9, '2023-06-09', '2023-06-12', 'Préstamo de cámaras fotográficas', NULL),
-(10, '2023-06-10', '2023-06-13', 'Préstamo de juegos de mesa', NULL);
+(1, '2023-06-01', '2023-06-05', 'Préstamo de libros', 1025881880),
+(2, '2023-06-02', '2023-06-04', 'Préstamo de equipo audiovisual', 1035972071),
+(3, '2023-06-03', '2023-06-07', 'Préstamo de computadora portátil', 1025881880),
+(4, '2023-06-04', '2023-06-06', 'Préstamo de proyector', 1035972071),
+(5, '2023-06-05', '2023-06-08', 'Préstamo de herramientas', 1040571170),
+(6, '2023-06-06', '2023-06-09', 'Préstamo de instrumentos musicales', 1025882179),
+(7, '2023-06-07', '2023-06-10', 'Préstamo de material de laboratorio', 1035972906),
+(8, '2023-06-08', '2023-06-11', 'Préstamo de bicicletas', 1035972906),
+(9, '2023-06-09', '2023-06-12', 'Préstamo de cámaras fotográficas', 1035972071),
+(10, '2023-06-10', '2023-06-13', 'Préstamo de juegos de mesa', 1035972906);
 
 -- --------------------------------------------------------
 
@@ -583,7 +692,7 @@ CREATE TABLE `reserva` (
   `FECHA_RES` date NOT NULL,
   `HORA_RES` time NOT NULL,
   `TIEMPO_REQUERIDO` time NOT NULL,
-  `ESTADO_APROVACION` int(1) NOT NULL,
+  `ESTADO_APROBACION` varchar(100) NOT NULL,
   `ID_USUARIO` int(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -591,16 +700,11 @@ CREATE TABLE `reserva` (
 -- Volcado de datos para la tabla `reserva`
 --
 
-INSERT INTO `reserva` (`ID_RESERVA`, `NOMBRE_INSUMO`, `TIPO_INSUMO`, `CARACTERISTICAS`, `CANTIDAD`, `JORNADA`, `FECHA_RES`, `HORA_RES`, `TIEMPO_REQUERIDO`, `ESTADO_APROVACION`, `ID_USUARIO`) VALUES
-(2, '', '', '', 0, '', '2023-06-14', '12:18:46', '02:00:46', 0, NULL),
-(3, '', '', '', 0, '', '2023-05-14', '12:18:46', '02:00:46', 0, NULL),
-(5, 'cuerda', 'cuero', 'metro', 124, 'diurna', '0000-00-00', '20:14:00', '00:00:02', 0, NULL),
-(10, 'cuerda', 'cuero', 'metro', 124, 'diurna', '0000-00-00', '20:14:00', '00:00:02', 0, 2),
-(15, 'cuerda', 'cuero', 'metro', 124, 'diurna', '0000-00-00', '20:14:00', '00:00:02', 0, 2),
-(16, 'cuerdaaaaaa', 'cuero', 'metro', 124, 'diurna', '0000-00-00', '20:14:00', '00:00:02', 0, 2),
-(39, '1', 'undefined', 'hp', 0, 'Tarde', '2023-06-21', '16:28:00', '00:00:02', 0, 1018226843),
-(40, '123213', 'trasparente', '50 cm y 60 cm', 3213123, 'Tarde', '2222-02-22', '16:58:00', '00:00:00', 0, 1018226843),
-(41, '2', 'undefined', 'hp', 0, 'Tarde', '2222-02-22', '18:28:00', '00:00:02', 0, 1018226843);
+INSERT INTO `reserva` (`ID_RESERVA`, `NOMBRE_INSUMO`, `TIPO_INSUMO`, `CARACTERISTICAS`, `CANTIDAD`, `JORNADA`, `FECHA_RES`, `HORA_RES`, `TIEMPO_REQUERIDO`, `ESTADO_APROBACION`, `ID_USUARIO`) VALUES
+(1, 'tela', 'material', 'algodon', 3, 'tarde', '2023-06-01', '11:57:34', '53:57:20', '', 1035972906),
+(2, 'martillo', 'herramienta', 'electrico', 3, 'mañana', '2023-06-07', '33:04:13', '16:04:13', '', 1035972071),
+(3, 'asus', 'computador', 'tiene cargador', 1, 'tarde', '2023-06-15', '30:04:50', '36:04:50', '', 1025882179),
+(4, 'ambiente', 'ambiente', '30 sillas', 1, 'tarde', '2023-06-01', '13:06:28', '15:06:28', '', 1035972906);
 
 -- --------------------------------------------------------
 
@@ -614,6 +718,17 @@ CREATE TABLE `res_elem` (
   `ID_RESERVA` int(100) NOT NULL,
   `ID_INVENTARIO` int(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `res_elem`
+--
+
+INSERT INTO `res_elem` (`ID_RES_ELEM`, `ID_RESERVA`, `ID_INVENTARIO`) VALUES
+(1, 4, 1),
+(2, 3, 2),
+(3, 2, 3),
+(4, 1, 4),
+(5, 3, 5);
 
 -- --------------------------------------------------------
 
@@ -666,10 +781,10 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`ID_USUARIO`, `NOMBRE`, `APELLIDO`, `TIPO_DOCUMENTO`, `CORREO`, `TELEFONO`, `DIRECCION`, `JORNADA`, `PROGRAMA_FORMACION`, `NUM_FICHA`, `GENERO`, `CONTRASENA`, `ID_ROL`) VALUES
-(1, 'daniela', 'jaramillo', 'c.', 'danij@gmail.com', '3147536733', 'calle 142 sur', 'diurna', 'adsi', 2472762, 'femenino', '1234', 1),
-(2, 'Juan', 'Martinez', 'cc', 'juanduque354@gmail.com', '3728825', 'clle 55a #59b 57', 'tarde', 'ADSI', 2472762, 'masculino', '3728825.', 4),
-(3, 'santiago', 'fd', 'cc', 'mzcsdkesdk@gmial.com', '2344444', 'cra 43-56-90', 'tarde', 'ADSI', 23455, 'masculino', '3232321', 2),
-(1018226843, 'sebas', 'jaramillo', 'c.', 'danij@gmail.com', '3147536733', 'calle 142 sur', 'diurna', 'adsi', 2472762, 'femenino', '1357', 2),
+(1025881880, 'agata', 'penagos', 'cc', 'agatapenagos5@gmail.com', '3016217959', 'carrera61', 'diruna', 'ADSO', 2696118, 'masculino', '456', 4),
+(1025882179, 'daniela', 'jaramillo', 'cc', 'danielajaraga@gmail.com', '3043963615', 'carrera69', 'diruna', 'ADSI', 2472762, 'femenino', 'danilinda', 1),
+(1035972071, 'marithza ', 'castaño', 'cc', 'castaño77@gmail.com', '3206781967', 'carrera70', 'diruna', 'ADSO', 2696118, 'femenino', '8910', 2),
+(1035972906, 'victoria', 'rendon', 'TI', 'vickyrendon@gmail.com', '3234377424', 'carrera50', 'diruna', 'ADSO', 2696118, 'femenino', '456', 2),
 (1040571170, 'camila', 'grajales', 'cc', 'mcgrajalesv@gmail.com', '3128611996', 'cra 43-56-90', 'tarde', 'adsi', 2472762, 'femenino', '123', 3);
 
 --
@@ -719,6 +834,13 @@ ALTER TABLE `material`
   ADD PRIMARY KEY (`ID_MATERIAL`);
 
 --
+-- Indices de la tabla `notificacion`
+--
+ALTER TABLE `notificacion`
+  ADD PRIMARY KEY (`ID_NOTI`),
+  ADD KEY `ID_USUARIO` (`ID_USUARIO`);
+
+--
 -- Indices de la tabla `prestamos`
 --
 ALTER TABLE `prestamos`
@@ -761,7 +883,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `computador`
 --
 ALTER TABLE `computador`
-  MODIFY `ID_COMPUTADOR` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_COMPUTADOR` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `elementos`
@@ -773,19 +895,25 @@ ALTER TABLE `elementos`
 -- AUTO_INCREMENT de la tabla `herramienta`
 --
 ALTER TABLE `herramienta`
-  MODIFY `ID_HERRAMIENTA` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_HERRAMIENTA` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT de la tabla `inventario`
 --
 ALTER TABLE `inventario`
-  MODIFY `ID_INVENTARIO` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `ID_INVENTARIO` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT de la tabla `material`
 --
 ALTER TABLE `material`
-  MODIFY `ID_MATERIAL` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `ID_MATERIAL` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+
+--
+-- AUTO_INCREMENT de la tabla `notificacion`
+--
+ALTER TABLE `notificacion`
+  MODIFY `ID_NOTI` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT de la tabla `prestamos`
