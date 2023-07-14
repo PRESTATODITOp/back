@@ -4,7 +4,7 @@ var _interopRequireDefault = require("@babel/runtime/helpers/interopRequireDefau
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updatePrestamos = exports.insertPrestamos = exports.findPrestamos = exports.findAllPrestamos = exports.deletePrestamos = void 0;
+exports.updatePrestamos = exports.updateDevolucion = exports.insertPrestamos = exports.findPrestamos = exports.findAllPrestamos = exports.deletePrestamos = void 0;
 var _regenerator = _interopRequireDefault(require("@babel/runtime/regenerator"));
 var _slicedToArray2 = _interopRequireDefault(require("@babel/runtime/helpers/slicedToArray"));
 var _asyncToGenerator2 = _interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator"));
@@ -33,7 +33,7 @@ var findAllPrestamos = /*#__PURE__*/function () {
         case 9:
           _context.prev = 9;
           _context.t0 = _context["catch"](0);
-          console.error("Ha ocurrido un error");
+          console.error("Ha ocurrido un error11");
         case 12:
         case "end":
           return _context.stop();
@@ -65,7 +65,7 @@ var findPrestamos = /*#__PURE__*/function () {
         case 10:
           _context2.prev = 10;
           _context2.t0 = _context2["catch"](1);
-          console.error("Ha ocurrido un error");
+          console.error("Ha ocurrido un error12");
         case 13:
         case "end":
           return _context2.stop();
@@ -79,31 +79,30 @@ var findPrestamos = /*#__PURE__*/function () {
 exports.findPrestamos = findPrestamos;
 var insertPrestamos = /*#__PURE__*/function () {
   var _ref3 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee3(req, res) {
-    var fechaPrestamo, final_prestamo, observaciones, id_usuario, result;
+    var observaciones, id_usuario, estado, result;
     return _regenerator["default"].wrap(function _callee3$(_context3) {
       while (1) switch (_context3.prev = _context3.next) {
         case 0:
-          fechaPrestamo = req.body.fechaPrestamo;
-          final_prestamo = req.body.final_prestamo;
           observaciones = req.body.observaciones;
           id_usuario = req.body.id_usuario;
-          _context3.prev = 4;
-          _context3.next = 7;
-          return _db.pool.query("CALL spInsertPrestamos('".concat(fechaPrestamo, "','").concat(final_prestamo, "','").concat(observaciones, "',\n       '").concat(id_usuario, "');"));
-        case 7:
+          estado = req.body.estado;
+          _context3.prev = 3;
+          _context3.next = 6;
+          return _db.pool.query("CALL spInsertPrestamos('".concat(observaciones, "','").concat(id_usuario, "' ,'").concat(estado, "');"));
+        case 6:
           result = _context3.sent;
           res.json(result);
-          _context3.next = 14;
+          _context3.next = 13;
           break;
-        case 11:
-          _context3.prev = 11;
-          _context3.t0 = _context3["catch"](4);
-          console.error("Ha ocurrido un error" + _context3.t0);
-        case 14:
+        case 10:
+          _context3.prev = 10;
+          _context3.t0 = _context3["catch"](3);
+          console.error("Ha ocurrido un error14" + _context3.t0);
+        case 13:
         case "end":
           return _context3.stop();
       }
-    }, _callee3, null, [[4, 11]]);
+    }, _callee3, null, [[3, 10]]);
   }));
   return function insertPrestamos(_x5, _x6) {
     return _ref3.apply(this, arguments);
@@ -144,52 +143,69 @@ var deletePrestamos = /*#__PURE__*/function () {
 exports.deletePrestamos = deletePrestamos;
 var updatePrestamos = /*#__PURE__*/function () {
   var _ref5 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee5(req, res) {
-    var id, fechaPrestamo, final_prestamo, observaciones, id_usuario, result;
+    var id, observaciones, id_usuario, estado, result;
     return _regenerator["default"].wrap(function _callee5$(_context5) {
       while (1) switch (_context5.prev = _context5.next) {
         case 0:
           id = req.params.id;
-          fechaPrestamo = req.body.fechaPrestamo;
-          final_prestamo = req.body.final_prestamo;
           observaciones = req.body.observaciones;
           id_usuario = req.body.id_usuario;
-          _context5.prev = 5;
-          _context5.next = 8;
-          return _db.pool.query("CALL spUpdatePrestamos('".concat(id, "','").concat(fechaPrestamo, "','").concat(final_prestamo, "','").concat(observaciones, "',\n       '").concat(id_usuario, "');"));
-        case 8:
+          estado = req.body.estado;
+          _context5.prev = 4;
+          _context5.next = 7;
+          return _db.pool.query("CALL spUpdatePrestamos(".concat(id, ",'").concat(observaciones, "','").concat(id_usuario, "' ,'").concat(estado, "');"));
+        case 7:
           result = _context5.sent;
           if (result[0].affectedRows != 0) res.json(result);else res.json({
             "Error": "NO ACTUALIZO"
           });
-          _context5.next = 15;
+          _context5.next = 14;
           break;
-        case 12:
-          _context5.prev = 12;
-          _context5.t0 = _context5["catch"](5);
+        case 11:
+          _context5.prev = 11;
+          _context5.t0 = _context5["catch"](4);
           console.error(_context5.t0);
-        case 15:
+        case 14:
         case "end":
           return _context5.stop();
       }
-    }, _callee5, null, [[5, 12]]);
+    }, _callee5, null, [[4, 11]]);
   }));
   return function updatePrestamos(_x9, _x10) {
     return _ref5.apply(this, arguments);
   };
 }();
-
-export const updatePrestamosE = async (req, res) => {
-  const id = req.params.id;
-  const estado = req.body.estado;
-
-  try {
-    const result = await pool.query(`CALL spUpdatePrestamosE(${id}, '${estado}');`);
-    if (result[0].affectedRows != 0)
-        res.json(result);
-     else
-        res.json({ "Error": "NO ACTUALIZO EL ESTADO" });
-
-  } catch (error) {
-     console.error("Ha ocurrido un error" + error);
-  }
-};
+exports.updatePrestamos = updatePrestamos;
+var updateDevolucion = /*#__PURE__*/function () {
+  var _ref6 = (0, _asyncToGenerator2["default"])( /*#__PURE__*/_regenerator["default"].mark(function _callee6(req, res) {
+    var id, estado, result;
+    return _regenerator["default"].wrap(function _callee6$(_context6) {
+      while (1) switch (_context6.prev = _context6.next) {
+        case 0:
+          id = req.params.id;
+          estado = req.body.estado;
+          _context6.prev = 2;
+          _context6.next = 5;
+          return _db.pool.query("CALL spUpdateDevolucion(".concat(id, ",'").concat(estado, "');"));
+        case 5:
+          result = _context6.sent;
+          if (result[0].affectedRows != 0) res.json(result);else res.json({
+            "Error": "NO ACTUALIZO EL ESTADO"
+          });
+          _context6.next = 12;
+          break;
+        case 9:
+          _context6.prev = 9;
+          _context6.t0 = _context6["catch"](2);
+          console.error(_context6.t0);
+        case 12:
+        case "end":
+          return _context6.stop();
+      }
+    }, _callee6, null, [[2, 9]]);
+  }));
+  return function updateDevolucion(_x11, _x12) {
+    return _ref6.apply(this, arguments);
+  };
+}();
+exports.updateDevolucion = updateDevolucion;
