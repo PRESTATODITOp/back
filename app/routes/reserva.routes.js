@@ -13,6 +13,6 @@ route.post("/insumosReserva",controller.InsumosReserva);
 route.put("/reserva/:id",controller.updateReserva);
 route.delete("/reserva/:id",controller.deleteReserva);
 
-route.put("/estado/:id",controller.updateEstado);
+route.patch("/estado/:id",controller.updateEstado);
 
 export default route;
