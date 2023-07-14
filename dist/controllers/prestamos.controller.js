@@ -177,4 +177,19 @@ var updatePrestamos = /*#__PURE__*/function () {
     return _ref5.apply(this, arguments);
   };
 }();
-exports.updatePrestamos = updatePrestamos;
+
+export const updatePrestamosE = async (req, res) => {
+  const id = req.params.id;
+  const estado = req.body.estado;
+
+  try {
+    const result = await pool.query(`CALL spUpdatePrestamosE(${id}, '${estado}');`);
+    if (result[0].affectedRows != 0)
+        res.json(result);
+     else
+        res.json({ "Error": "NO ACTUALIZO EL ESTADO" });
+
+  } catch (error) {
+     console.error("Ha ocurrido un error" + error);
+  }
+};

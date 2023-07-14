@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 14-07-2023 a las 04:08:34
+-- Tiempo de generación: 14-07-2023 a las 08:13:23
 -- Versión del servidor: 10.4.28-MariaDB
--- Versión de PHP: 8.1.17
+-- Versión de PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -372,6 +372,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdatePrestamos` (IN `_ID_PRESTAM
     WHERE ID_PRESTAMOS = _ID_PRESTAMOS;
 END$$
 
+DROP PROCEDURE IF EXISTS `spUpdatePrestamosE`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdatePrestamosE` (IN `_ID_PRESTAMOS` INT, IN `_ESTADO` VARCHAR(150))   BEGIN
+    UPDATE prestamos
+    SET ESTADO = _ESTADO 
+    WHERE ID_PRESTAMOS = _ID_PRESTAMOS;
+END$$
+
 DROP PROCEDURE IF EXISTS `spUpdateResElem`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `spUpdateResElem` (IN `_ID_RES_ELEM` INT, IN `_ID_RESERVA` INT, IN `_ID_INVENTARIO` INT)   BEGIN
     UPDATE res_elem
@@ -409,12 +416,13 @@ DELIMITER ;
 --
 
 DROP TABLE IF EXISTS `ambientes`;
-CREATE TABLE `ambientes` (
+CREATE TABLE IF NOT EXISTS `ambientes` (
   `ID_AMBIENTES` int(100) NOT NULL,
   `CANT_SILLAS` int(100) DEFAULT NULL,
   `CANT_MESAS` int(100) DEFAULT NULL,
   `NUM_APRENDICES` int(100) DEFAULT NULL,
-  `NUM_EQUIPOS` int(100) DEFAULT NULL
+  `NUM_EQUIPOS` int(100) DEFAULT NULL,
+  PRIMARY KEY (`ID_AMBIENTES`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -440,12 +448,13 @@ INSERT INTO `ambientes` (`ID_AMBIENTES`, `CANT_SILLAS`, `CANT_MESAS`, `NUM_APREN
 --
 
 DROP TABLE IF EXISTS `computador`;
-CREATE TABLE `computador` (
-  `ID_COMPUTADOR` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `computador` (
+  `ID_COMPUTADOR` int(100) NOT NULL AUTO_INCREMENT,
   `MARCA` varchar(100) DEFAULT NULL,
   `CARGADOR` varchar(10) DEFAULT NULL,
-  `MOUSE` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `MOUSE` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`ID_COMPUTADOR`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `computador`
@@ -470,11 +479,14 @@ INSERT INTO `computador` (`ID_COMPUTADOR`, `MARCA`, `CARGADOR`, `MOUSE`) VALUES
 --
 
 DROP TABLE IF EXISTS `elementos`;
-CREATE TABLE `elementos` (
-  `ID_ELEMENTOS` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `elementos` (
+  `ID_ELEMENTOS` int(100) NOT NULL AUTO_INCREMENT,
   `ID_PRESTAMOS` int(100) DEFAULT NULL,
-  `ID_INVENTARIO` int(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ID_INVENTARIO` int(100) DEFAULT NULL,
+  PRIMARY KEY (`ID_ELEMENTOS`),
+  KEY `ID_PRESTAMOS` (`ID_PRESTAMOS`),
+  KEY `ID_INVENTARIO` (`ID_INVENTARIO`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `elementos`
@@ -494,11 +506,12 @@ INSERT INTO `elementos` (`ID_ELEMENTOS`, `ID_PRESTAMOS`, `ID_INVENTARIO`) VALUES
 --
 
 DROP TABLE IF EXISTS `herramienta`;
-CREATE TABLE `herramienta` (
-  `ID_HERRAMIENTA` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `herramienta` (
+  `ID_HERRAMIENTA` int(100) NOT NULL AUTO_INCREMENT,
   `TIPO` varchar(100) DEFAULT NULL,
-  `COLOR` varchar(10) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `COLOR` varchar(10) DEFAULT NULL,
+  PRIMARY KEY (`ID_HERRAMIENTA`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `herramienta`
@@ -522,16 +535,21 @@ INSERT INTO `herramienta` (`ID_HERRAMIENTA`, `TIPO`, `COLOR`) VALUES
 --
 
 DROP TABLE IF EXISTS `inventario`;
-CREATE TABLE `inventario` (
-  `ID_INVENTARIO` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `inventario` (
+  `ID_INVENTARIO` int(100) NOT NULL AUTO_INCREMENT,
   `CANTIDAD` int(100) NOT NULL,
   `FECHA_REGISTRO` date NOT NULL,
   `ESTADO` tinyint(1) NOT NULL,
   `ID_AMBIENTES` int(100) NOT NULL,
   `ID_COMPUTADOR` int(100) NOT NULL,
   `ID_HERRAMIENTA` int(100) NOT NULL,
-  `ID_MATERIAL` int(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ID_MATERIAL` int(100) NOT NULL,
+  PRIMARY KEY (`ID_INVENTARIO`),
+  KEY `ID_HERRAMIENTA` (`ID_HERRAMIENTA`),
+  KEY `ID_AMBIENTES` (`ID_AMBIENTES`),
+  KEY `ID_COMPUTADOR` (`ID_COMPUTADOR`),
+  KEY `ID_MATERIAL` (`ID_MATERIAL`)
+) ENGINE=InnoDB AUTO_INCREMENT=88 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `inventario`
@@ -551,13 +569,14 @@ INSERT INTO `inventario` (`ID_INVENTARIO`, `CANTIDAD`, `FECHA_REGISTRO`, `ESTADO
 --
 
 DROP TABLE IF EXISTS `material`;
-CREATE TABLE `material` (
-  `ID_MATERIAL` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `material` (
+  `ID_MATERIAL` int(100) NOT NULL AUTO_INCREMENT,
   `NOMBRE` varchar(100) NOT NULL,
   `TIPO` varchar(100) DEFAULT NULL,
   `COLOR` varchar(10) DEFAULT NULL,
-  `MEDIDAS` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `MEDIDAS` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ID_MATERIAL`)
+) ENGINE=InnoDB AUTO_INCREMENT=104 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `material`
@@ -587,31 +606,34 @@ INSERT INTO `material` (`ID_MATERIAL`, `NOMBRE`, `TIPO`, `COLOR`, `MEDIDAS`) VAL
 --
 
 DROP TABLE IF EXISTS `prestamos`;
-CREATE TABLE `prestamos` (
-  `ID_PRESTAMOS` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `prestamos` (
+  `ID_PRESTAMOS` int(100) NOT NULL AUTO_INCREMENT,
   `FECHA_PRESTAMO` date NOT NULL,
   `FINAL_PRESTAMO` date NOT NULL,
   `OBSERVACIONES` varchar(100) NOT NULL,
-  `ID_USUARIO` int(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ID_USUARIO` int(100) DEFAULT NULL,
+  `ESTADO` varchar(150) NOT NULL,
+  PRIMARY KEY (`ID_PRESTAMOS`),
+  KEY `ID_USUARIO` (`ID_USUARIO`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `prestamos`
 --
 
-INSERT INTO `prestamos` (`ID_PRESTAMOS`, `FECHA_PRESTAMO`, `FINAL_PRESTAMO`, `OBSERVACIONES`, `ID_USUARIO`) VALUES
-(1, '2023-06-01', '2023-06-05', 'Préstamo de libros', 1025881880),
-(2, '2023-06-02', '2023-06-04', 'Préstamo de equipo audiovisual', 1035972071),
-(3, '2023-06-03', '2023-06-07', 'Préstamo de computadora portátil', 1025881880),
-(4, '2023-06-04', '2023-06-06', 'Préstamo de proyector', 1035972071),
-(5, '2023-06-05', '2023-06-08', 'Préstamo de herramientas', 1040571170),
-(6, '2023-06-06', '2023-06-09', 'Préstamo de instrumentos musicales', 1025882179),
-(7, '2023-06-07', '2023-06-10', 'Préstamo de material de laboratorio', 1035972906),
-(8, '2023-06-08', '2023-06-11', 'Préstamo de bicicletas', 1035972906),
-(9, '2023-06-09', '2023-06-12', 'Préstamo de cámaras fotográficas', 1035972071),
-(10, '2023-06-10', '2023-06-13', 'Préstamo de juegos de mesa', 1035972906),
-(11, '0000-00-00', '0000-00-00', 'holas', 1035972906),
-(12, '0000-00-00', '0000-00-00', 'Describe tus quejas', 1035972906);
+INSERT INTO `prestamos` (`ID_PRESTAMOS`, `FECHA_PRESTAMO`, `FINAL_PRESTAMO`, `OBSERVACIONES`, `ID_USUARIO`, `ESTADO`) VALUES
+(1, '2023-06-01', '2023-06-05', 'Préstamo de libros', 1025881880, 'POR ENTREGAR'),
+(2, '2023-06-02', '2023-06-04', 'Préstamo de equipo audiovisual', 1035972071, 'POR ENTREGAR'),
+(3, '2023-06-03', '2023-06-07', 'Préstamo de computadora portátil', 1025881880, 'POR ENTREGAR'),
+(4, '2023-06-04', '2023-06-06', 'Préstamo de proyector', 1035972071, 'POR ENTREGAR'),
+(5, '2023-06-05', '2023-06-08', 'Préstamo de herramientas', 1040571170, 'POR ENTREGAR'),
+(6, '2023-06-06', '2023-06-09', 'Préstamo de instrumentos musicales', 1025882179, 'POR ENTREGAR'),
+(7, '2023-06-07', '2023-06-10', 'Préstamo de material de laboratorio', 1035972906, 'POR ENTREGAR'),
+(8, '2023-06-08', '2023-06-11', 'Préstamo de bicicletas', 1035972906, 'POR ENTREGAR'),
+(9, '2023-06-09', '2023-06-12', 'Préstamo de cámaras fotográficas', 1035972071, 'POR ENTREGAR'),
+(10, '2023-06-10', '2023-06-13', 'Préstamo de juegos de mesa', 1035972906, 'POR ENTREGAR'),
+(19, '0000-00-00', '0000-00-00', 'gsgsg', 1025881880, 'POR ENTREGAR'),
+(20, '0000-00-00', '0000-00-00', 'muy sucio', 1025881880, 'POR ENTREGAR');
 
 -- --------------------------------------------------------
 
@@ -620,8 +642,8 @@ INSERT INTO `prestamos` (`ID_PRESTAMOS`, `FECHA_PRESTAMO`, `FINAL_PRESTAMO`, `OB
 --
 
 DROP TABLE IF EXISTS `reserva`;
-CREATE TABLE `reserva` (
-  `ID_RESERVA` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `reserva` (
+  `ID_RESERVA` int(100) NOT NULL AUTO_INCREMENT,
   `NOMBRE_INSUMO` varchar(100) NOT NULL,
   `TIPO_INSUMO` varchar(100) NOT NULL,
   `CARACTERISTICAS` varchar(100) NOT NULL,
@@ -631,8 +653,10 @@ CREATE TABLE `reserva` (
   `HORA_RES` time NOT NULL,
   `TIEMPO_REQUERIDO` time NOT NULL,
   `ESTADO` varchar(100) NOT NULL DEFAULT 'revision',
-  `ID_USUARIO` int(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ID_USUARIO` int(100) DEFAULT NULL,
+  PRIMARY KEY (`ID_RESERVA`),
+  KEY `fk__ID_USUARIO` (`ID_USUARIO`)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `reserva`
@@ -657,11 +681,14 @@ INSERT INTO `reserva` (`ID_RESERVA`, `NOMBRE_INSUMO`, `TIPO_INSUMO`, `CARACTERIS
 --
 
 DROP TABLE IF EXISTS `res_elem`;
-CREATE TABLE `res_elem` (
-  `ID_RES_ELEM` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `res_elem` (
+  `ID_RES_ELEM` int(100) NOT NULL AUTO_INCREMENT,
   `ID_RESERVA` int(100) NOT NULL,
-  `ID_INVENTARIO` int(100) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ID_INVENTARIO` int(100) NOT NULL,
+  PRIMARY KEY (`ID_RES_ELEM`),
+  KEY `fk_ID_RESERVA` (`ID_RESERVA`),
+  KEY `fk_ID_INVENTARIO` (`ID_INVENTARIO`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `res_elem`
@@ -681,11 +708,12 @@ INSERT INTO `res_elem` (`ID_RES_ELEM`, `ID_RESERVA`, `ID_INVENTARIO`) VALUES
 --
 
 DROP TABLE IF EXISTS `rol`;
-CREATE TABLE `rol` (
-  `ID_ROL` int(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS `rol` (
+  `ID_ROL` int(100) NOT NULL AUTO_INCREMENT,
   `NOMBRE_ROL` varchar(100) NOT NULL,
-  `ESTADO` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+  `ESTADO` tinyint(1) NOT NULL,
+  PRIMARY KEY (`ID_ROL`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `rol`
@@ -704,7 +732,7 @@ INSERT INTO `rol` (`ID_ROL`, `NOMBRE_ROL`, `ESTADO`) VALUES
 --
 
 DROP TABLE IF EXISTS `usuario`;
-CREATE TABLE `usuario` (
+CREATE TABLE IF NOT EXISTS `usuario` (
   `ID_USUARIO` int(100) NOT NULL,
   `NOMBRE` varchar(30) DEFAULT NULL,
   `APELLIDO` varchar(30) DEFAULT NULL,
@@ -717,7 +745,9 @@ CREATE TABLE `usuario` (
   `NUM_FICHA` int(15) DEFAULT NULL,
   `GENERO` varchar(10) DEFAULT NULL,
   `CONTRASENA` varchar(100) NOT NULL,
-  `ID_ROL` int(100) DEFAULT NULL
+  `ID_ROL` int(100) DEFAULT NULL,
+  PRIMARY KEY (`ID_USUARIO`),
+  KEY `ID_ROL` (`ID_ROL`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -736,145 +766,6 @@ INSERT INTO `usuario` (`ID_USUARIO`, `NOMBRE`, `APELLIDO`, `TIPO_DOCUMENTO`, `CO
 (1035972071, 'marithza ', 'castaño', 'cc', 'castaño77@gmail.com', '3206781967', 'carrera70', 'diruna', 'ADSO', 2696118, 'femenino', '8910', 2),
 (1035972906, 'victoria', 'rendon', 'TI', 'vickyrendon@gmail.com', '3234377424', 'carrera50', 'diruna', 'ADSO', 2696118, 'femenino', '456', 2),
 (1040571170, 'camila', 'grajales', 'cc', 'mcgrajalesv01@gmail.com', '3128611996', 'cra 43-56-90', 'tarde', 'adsi', 2472762, 'femenino', '123', 3);
-
---
--- Índices para tablas volcadas
---
-
---
--- Indices de la tabla `ambientes`
---
-ALTER TABLE `ambientes`
-  ADD PRIMARY KEY (`ID_AMBIENTES`);
-
---
--- Indices de la tabla `computador`
---
-ALTER TABLE `computador`
-  ADD PRIMARY KEY (`ID_COMPUTADOR`);
-
---
--- Indices de la tabla `elementos`
---
-ALTER TABLE `elementos`
-  ADD PRIMARY KEY (`ID_ELEMENTOS`),
-  ADD KEY `ID_PRESTAMOS` (`ID_PRESTAMOS`),
-  ADD KEY `ID_INVENTARIO` (`ID_INVENTARIO`);
-
---
--- Indices de la tabla `herramienta`
---
-ALTER TABLE `herramienta`
-  ADD PRIMARY KEY (`ID_HERRAMIENTA`);
-
---
--- Indices de la tabla `inventario`
---
-ALTER TABLE `inventario`
-  ADD PRIMARY KEY (`ID_INVENTARIO`),
-  ADD KEY `ID_HERRAMIENTA` (`ID_HERRAMIENTA`),
-  ADD KEY `ID_AMBIENTES` (`ID_AMBIENTES`),
-  ADD KEY `ID_COMPUTADOR` (`ID_COMPUTADOR`),
-  ADD KEY `ID_MATERIAL` (`ID_MATERIAL`);
-
---
--- Indices de la tabla `material`
---
-ALTER TABLE `material`
-  ADD PRIMARY KEY (`ID_MATERIAL`);
-
---
--- Indices de la tabla `prestamos`
---
-ALTER TABLE `prestamos`
-  ADD PRIMARY KEY (`ID_PRESTAMOS`),
-  ADD KEY `ID_USUARIO` (`ID_USUARIO`);
-
---
--- Indices de la tabla `reserva`
---
-ALTER TABLE `reserva`
-  ADD PRIMARY KEY (`ID_RESERVA`),
-  ADD KEY `fk__ID_USUARIO` (`ID_USUARIO`);
-
---
--- Indices de la tabla `res_elem`
---
-ALTER TABLE `res_elem`
-  ADD PRIMARY KEY (`ID_RES_ELEM`),
-  ADD KEY `fk_ID_RESERVA` (`ID_RESERVA`),
-  ADD KEY `fk_ID_INVENTARIO` (`ID_INVENTARIO`);
-
---
--- Indices de la tabla `rol`
---
-ALTER TABLE `rol`
-  ADD PRIMARY KEY (`ID_ROL`);
-
---
--- Indices de la tabla `usuario`
---
-ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`ID_USUARIO`),
-  ADD KEY `ID_ROL` (`ID_ROL`);
-
---
--- AUTO_INCREMENT de las tablas volcadas
---
-
---
--- AUTO_INCREMENT de la tabla `computador`
---
-ALTER TABLE `computador`
-  MODIFY `ID_COMPUTADOR` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT de la tabla `elementos`
---
-ALTER TABLE `elementos`
-  MODIFY `ID_ELEMENTOS` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
-
---
--- AUTO_INCREMENT de la tabla `herramienta`
---
-ALTER TABLE `herramienta`
-  MODIFY `ID_HERRAMIENTA` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-
---
--- AUTO_INCREMENT de la tabla `inventario`
---
-ALTER TABLE `inventario`
-  MODIFY `ID_INVENTARIO` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
-
---
--- AUTO_INCREMENT de la tabla `material`
---
-ALTER TABLE `material`
-  MODIFY `ID_MATERIAL` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
-
---
--- AUTO_INCREMENT de la tabla `prestamos`
---
-ALTER TABLE `prestamos`
-  MODIFY `ID_PRESTAMOS` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT de la tabla `reserva`
---
-ALTER TABLE `reserva`
-  MODIFY `ID_RESERVA` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
--- AUTO_INCREMENT de la tabla `res_elem`
---
-ALTER TABLE `res_elem`
-  MODIFY `ID_RES_ELEM` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT de la tabla `rol`
---
-ALTER TABLE `rol`
-  MODIFY `ID_ROL` int(100) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- Restricciones para tablas volcadas
