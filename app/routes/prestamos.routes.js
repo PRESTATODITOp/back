@@ -15,5 +15,6 @@ route.post("/prestamos",controller.insertPrestamos);
 route.put("/prestamos/:id",controller.updatePrestamos);
 route.delete("/prestamos/:id",controller.deletePrestamos);
 
+route.patch("/prestamo/:id",controller.updateDevolucion);
 
 export default route;
